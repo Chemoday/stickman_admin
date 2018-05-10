@@ -25,7 +25,11 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    pass
+    DEBUG = False
+    DATABASE = {
+        'name': 'test.db',
+        'engine': 'peewee.SqliteDatabase'
+    }
 
 class ProductionConfig(Config):
     pass
@@ -34,6 +38,5 @@ config_select = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-
     'default': DevelopmentConfig
 }

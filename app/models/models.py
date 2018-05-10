@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from peewee import *
 
-from app import db
+from .. import db
 from app.utils.auth import token_generator
 
 

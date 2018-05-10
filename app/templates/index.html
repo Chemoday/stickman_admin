@@ -8,7 +8,11 @@
     <title>Title</title>
 </head>
 <body>
-Flask working
-{{ wtf.quick_form(form) }}
+test
+
+{% if user %}
+    {{ user.nickname }}
+{% endif %}
+{{  wtf.quick_form(form) }}
 </body>
 </html>
