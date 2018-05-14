@@ -2,11 +2,12 @@ import os
 import peewee
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
 
     POSTS_PER_PAGE = 10
-    TOKEN_LIFETIME = 600
+    TOKEN_LIFETIME = 60
 
     @staticmethod
     def init_app(app):
@@ -25,11 +26,12 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    DEBUG = False
-    DATABASE = {
-        'name': 'test.db',
-        'engine': 'peewee.SqliteDatabase'
-    }
+    pass
+    # DEBUG = False
+    # DATABASE = {
+    #     'name': 'test.db',
+    #     'engine': 'peewee.SqliteDatabase'
+    # }
 
 class ProductionConfig(Config):
     pass
@@ -39,4 +41,8 @@ config_select = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
+}
+
+admin_actions = {
+    'login': 1
 }
