@@ -1,5 +1,6 @@
 from flask import request, abort, jsonify, url_for, g
 from . import auth_api, auth_api_handler
+from config import admin_actions
 from flask import  Response
 from playhouse.shortcuts import model_to_dict
 from itsdangerous import BadTimeSignature, BadSignature
@@ -8,7 +9,7 @@ import datetime
 
 
 
-from app.models.models import Admins, Users
+from app.models.models import Admins, Users, AdminHistory
 
 @auth_api.route('/admin/register', methods = ['POST'])
 def register_admin():
@@ -40,7 +41,9 @@ def register_admin():
 @auth_api.route('/admin/login')
 @auth_api_handler.login_required
 def login():
-    pass
+    AdminHistory.create(action=admin_actions['login'],
+                        username=g.admin.username)
+    return jsonify({'token': g.admin.token})
 
 
 @auth_api.route('/admin/request-token')

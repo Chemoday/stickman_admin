@@ -57,13 +57,12 @@ class Admins(BaseModel):
 
 class AdminHistory(BaseModel):
     action = IntegerField(null=True)
-    admin = IntegerField(column_name='admin_id', null=True)
-    created_dt = TimeField(null=True)
+    created_dt = DateTimeField(null=True, default=datetime.datetime.now())
+    username = CharField(null=True)
 
     class Meta:
         table_name = 'admin_history'
-        schema = 'public'
-        primary_key = False
+
 
 
 class Users(BaseModel):
@@ -96,3 +95,47 @@ class Users(BaseModel):
         table_name = 'users'
 
 
+class UserProfiles(BaseModel):
+    character = IntegerField(column_name='character_id')
+    exp = IntegerField(constraints=[SQL("DEFAULT 0")])
+    last_level_up_dt = DateTimeField(null=True)
+    level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    mod = IntegerField()
+    next_level_exp = IntegerField(constraints=[SQL("DEFAULT 150")])
+    profile = IntegerField(column_name='profile_id')
+    rating = IntegerField(constraints=[SQL("DEFAULT 0")])
+    selected = BooleanField(constraints=[SQL("DEFAULT true")])
+    skill_points = IntegerField(constraints=[SQL("DEFAULT 0")])
+    total_deaths = IntegerField(constraints=[SQL("DEFAULT 0")])
+    total_frags = IntegerField(constraints=[SQL("DEFAULT 0")])
+    total_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user = IntegerField(column_name='user_id', index=True)
+    vip_end_dt = DateTimeField(null=True)
+    weapons_slots = IntegerField(constraints=[SQL("DEFAULT 3")])
+
+    class Meta:
+        table_name = 'user_profiles'
+
+class UserProfileWeapons(BaseModel):
+    equipped = BooleanField(constraints=[SQL("DEFAULT false")], null=True)
+    extra_ammo_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    extra_damage_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    extra_recoil_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    extra_reload_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    extra_shot_interval_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    extra_spread_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    headshots = IntegerField(constraints=[SQL("DEFAULT 0")])
+    kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    rent_end_dt = DateTimeField(null=True)
+    rent_forever = BooleanField(constraints=[SQL("DEFAULT false")], null=True)
+    selected = BooleanField(constraints=[SQL("DEFAULT false")], null=True)
+    teammate_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    unlocked_dt = DateTimeField(null=True)
+    upgrade_points = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user_profile = IntegerField(column_name='user_profile_id', index=True)
+    victory_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    weapon = IntegerField(column_name='weapon_id')
+
+    class Meta:
+        table_name = 'user_profile_weapons'
