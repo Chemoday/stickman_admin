@@ -139,3 +139,43 @@ class UserProfileWeapons(BaseModel):
 
     class Meta:
         table_name = 'user_profile_weapons'
+
+class UserProfileArmors(BaseModel):
+    armor = IntegerField(column_name='armor_id')
+    created_dt = DateTimeField(constraints=[SQL("DEFAULT now()")], null=True)
+    current_durability = IntegerField()
+    equipped = BooleanField(constraints=[SQL("DEFAULT false")], null=True)
+    user_profile = IntegerField(column_name='user_profile_id')
+
+    class Meta:
+        table_name = 'user_profile_armors'
+        indexes = (
+            (('user_profile', 'armor'), True),
+        )
+        primary_key = CompositeKey('armor', 'user_profile')
+
+
+class UserProfileSkills(BaseModel):
+    accuracy = IntegerField(constraints=[SQL("DEFAULT 0")])
+    defence = IntegerField(constraints=[SQL("DEFAULT 0")])
+    explosions = IntegerField(constraints=[SQL("DEFAULT 0")])
+    health = IntegerField(constraints=[SQL("DEFAULT 0")])
+    luck = IntegerField(constraints=[SQL("DEFAULT 0")])
+    strength = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user_profile = IntegerField(column_name='user_profile_id')
+
+    class Meta:
+        table_name = 'user_profile_skills'
+
+class UserRatings(BaseModel):
+    daily_rating = IntegerField(constraints=[SQL("DEFAULT 0")])
+    global_rating = IntegerField(constraints=[SQL("DEFAULT 1000")])
+    monthly_rating = IntegerField(constraints=[SQL("DEFAULT 0")])
+    season_rating = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user = AutoField(column_name='user_id')
+    weekly_rating = IntegerField(constraints=[SQL("DEFAULT 0")])
+
+    class Meta:
+        table_name = 'user_ratings'
+
+
