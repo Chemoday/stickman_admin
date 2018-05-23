@@ -45,7 +45,7 @@ def login():
                         username=g.admin.username)
     return jsonify({'token': g.admin.token})
 
-
+#TODO rework token authorization, validation & etc // reduce token liquidity time
 @auth_api.route('/admin/request-token')
 @auth_api_handler.login_required
 def request_token():
@@ -79,7 +79,7 @@ def verify_password(username_or_token, password):
 
 @auth_api.route('/admin',  methods = ['POST'])
 @auth_api_handler.login_required
-def request_user():
+def request_admin():
     admin = g.admin
     return jsonify(model_to_dict(admin, exclude=[Admins.password]))
 
