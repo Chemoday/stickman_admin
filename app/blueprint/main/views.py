@@ -4,7 +4,7 @@ from . import main_bp
 from ..auth_http import auth_api_handler
 from .forms import NameForm
 from playhouse.shortcuts import model_to_dict
-from app.models.models import Users, UserProfiles,UserProfileWeapons
+from app.models.models import Users, UserProfiles,UserProfileWeapons, BalanceHistory
 from app.utils.validators import validate_int_json_data
 from app import db
 
@@ -36,9 +36,10 @@ def profile_get_all_info(profile_id=None):
         return jsonify({'error': 'profile with this id is not exists'})
 
     weapons = _get_profile_weapons(profile_id)
-
+    balance_history = _get_account_balance_history(search_by='profile', id=profile_id)
     data = {'profile': model_to_dict(profile, exclude=[UserProfiles.vip_end_dt]),
-            'weapons': weapons}
+            'weapons': weapons,
+            'balance_history': balance_history}
     return jsonify(data)
 
 @main_bp.route('/admin/profile/get', methods=['POST'])
@@ -64,9 +65,31 @@ def _get_profile(profile_id):
 def _get_profile_weapons(profile_id):
     weapons = {}
     profile_weapons = UserProfileWeapons.select().where(UserProfileWeapons.user_profile == profile_id)
-    for id, weapon in enumerate(profile_weapons):
-        weapons[str(id)] = model_to_dict(weapon)
+    for id, row in enumerate(profile_weapons):
+        weapons[str(row.weapon)] = model_to_dict(row)
     return weapons
+
+def _get_account_balance_history(id, search_by='user'):
+    """
+
+    :param id: profile_id or user_id of player
+    :param search_by: accepts only string - user or profile
+    :return: player balance history depends of search type
+    """
+    #TODO make universal function, search by various parameters
+
+    balance_history = {}
+    if search_by == 'user':
+        history = BalanceHistory.select().where(BalanceHistory.user == id)
+    elif search_by =='profile':
+        history = BalanceHistory.select().where(BalanceHistory.user_profile == id)
+    else:
+        return False
+
+    for row in history:
+        balance_history[row.id] = model_to_dict(row, max_depth=0)
+
+    return balance_history
 
 
 
@@ -74,7 +97,7 @@ def _get_profile_weapons(profile_id):
 @auth_api_handler.login_required
 def user_get_stats():
     user_id = validate_int_json_data(argument_name='user_id')
-    #TODO make user_get_stats 
+    #TODO make user_get_stats
     pass
 
 
@@ -101,3 +124,9 @@ def player_entity_search():
     return jsonify(entity_data)
 
 
+
+@main_bp.route('/test')
+def test():
+    cursor = db.execute_sql('select find_top_total_kills()')
+    for row in cursor.fetchall():
+        print(row, type(row[0]))

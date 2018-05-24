@@ -179,3 +179,19 @@ class UserRatings(BaseModel):
         table_name = 'user_ratings'
 
 
+class BalanceHistory(BaseModel):
+    comment = CharField(null=True)
+    created_dt = DateTimeField(constraints=[SQL("DEFAULT now()")])
+    gold = IntegerField(constraints=[SQL("DEFAULT 0")])
+    goods = IntegerField(column_name='goods_id', constraints=[SQL("DEFAULT 0")])
+    goods_type = IntegerField(constraints=[SQL("DEFAULT 0")])
+    id = BigAutoField()
+    shards = IntegerField(constraints=[SQL("DEFAULT 0")])
+    silver = IntegerField(constraints=[SQL("DEFAULT 0")])
+    source = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user = ForeignKeyField(column_name='user_id', field='id', model=Users)
+    user_profile = IntegerField(column_name='user_profile_id')
+
+    class Meta:
+        table_name = 'balance_history'
+        schema = 'public'
