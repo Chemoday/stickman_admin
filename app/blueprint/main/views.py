@@ -4,7 +4,7 @@ from . import main_bp
 from ..auth_http import auth_api_handler
 from .forms import NameForm
 from playhouse.shortcuts import model_to_dict
-from app.models.models import Users, UserProfiles,UserProfileWeapons, BalanceHistory
+from app.models.models import Users, UserProfiles,UserProfileWeapons, BalanceHistory, UserStats
 from app.utils.validators import validate_int_json_data
 from app import db
 
@@ -97,8 +97,12 @@ def _get_account_balance_history(id, search_by='user'):
 @auth_api_handler.login_required
 def user_get_stats():
     user_id = validate_int_json_data(argument_name='user_id')
-    #TODO make user_get_stats
-    pass
+    q = UserStats.select().where(UserStats.user == user_id)
+    if q.exists():
+        stats = UserStats.get(UserStats.user == user_id)
+        return jsonify(model_to_dict(stats))
+    else:
+        return jsonify({'error': 'User is not exist'})
 
 
 

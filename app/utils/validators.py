@@ -18,7 +18,6 @@ def validate_int_json_data(argument_name):
             'error': 'wrong parameter, awaiting <{0}>'.format(argument_name)},
             400)))
 
-    print(type(entity_id))
     if type(entity_id) != int:
         abort(make_response(jsonify({
             "error": '<{0}> have wrong data type, must be int'.format(argument_name)},

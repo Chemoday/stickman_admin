@@ -178,6 +178,28 @@ class UserRatings(BaseModel):
     class Meta:
         table_name = 'user_ratings'
 
+class UserStats(BaseModel):
+    achievement_points = IntegerField(constraints=[SQL("DEFAULT 0")])
+    ctf_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    delivered_flags = IntegerField(constraints=[SQL("DEFAULT 0")])
+    dm_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    dom_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    double_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    elm_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    headshots = IntegerField(constraints=[SQL("DEFAULT 0")])
+    melee_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    multi_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    mvp = IntegerField(constraints=[SQL("DEFAULT 0")])
+    play_time = IntegerField(constraints=[SQL("DEFAULT 0")])
+    tdm_wins = IntegerField(constraints=[SQL("DEFAULT 0")])
+    total_deaths = IntegerField(constraints=[SQL("DEFAULT 0")])
+    total_kills = IntegerField(constraints=[SQL("DEFAULT 0")])
+    user = AutoField(column_name='user_id')
+
+    class Meta:
+        table_name = 'user_stats'
+        schema = 'public'
+
 
 class BalanceHistory(BaseModel):
     comment = CharField(null=True)
