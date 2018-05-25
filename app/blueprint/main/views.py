@@ -33,14 +33,18 @@ def profile_get_all_info(profile_id=None):
     profile = _get_profile(profile_id=profile_id)
 
     if not profile:
-        return jsonify({'error': 'profile with this id is not exists'})
+        return jsonify({'result': 'ERROR',
+                        'reason': 'profile with this id is not exists'})
 
     weapons = _get_profile_weapons(profile_id)
     balance_history = _get_account_balance_history(search_by='profile', id=profile_id)
     data = {'profile': model_to_dict(profile, exclude=[UserProfiles.vip_end_dt]),
             'weapons': weapons,
-            'balance_history': balance_history}
-    return jsonify(data)
+            'balance_history': balance_history,
+            'result': 'OK'}
+
+    return jsonify({'reason': 'OK',
+                    'profile': data})
 
 @main_bp.route('/admin/profile/get', methods=['POST'])
 @auth_api_handler.login_required
@@ -51,7 +55,8 @@ def profile_get(profile_id=None):
     profile = _get_profile(profile_id=profile_id)
 
     if not profile:
-        return jsonify({'error': 'profile with this id is not exists'})
+        return jsonify({'result': 'ERROR',
+                        'reason': 'profile with this id is not exists'})
     return jsonify(model_to_dict(profile, exclude=[UserProfiles.vip_end_dt]))
 
 
@@ -100,9 +105,11 @@ def user_get_stats():
     q = UserStats.select().where(UserStats.user == user_id)
     if q.exists():
         stats = UserStats.get(UserStats.user == user_id)
-        return jsonify(model_to_dict(stats))
+        return jsonify({'stats': model_to_dict(stats),
+                        'result': 'OK'})
     else:
-        return jsonify({'error': 'User is not exist'})
+        return jsonify({'reason': 'User is not exist',
+                        'result': 'ERROR'})
 
 
 
@@ -118,6 +125,9 @@ def player_entity_search():
         for user in users:
             users_data[str(user.id)] = model_to_dict(user, exclude=[Users.password,
                                                           Users.settings])
+    else:
+        return jsonify({'reason': 'User is not exist',
+                        'result': 'ERROR'})
 
     profiles_data = _get_profile(profile_id=entity_id)
     entity_data = {'users': users_data,
@@ -125,12 +135,27 @@ def player_entity_search():
 
 
 
-    return jsonify(entity_data)
+    return jsonify({'result': 'OK',
+                    'entity_id':entity_data})
 
 
+@main_bp.route('/admin/user/update/nickname', methods=['POST'])
+def update_user_nickname():
+    user_id = validate_int_json_data(argument_name='user_id')
+    new_nickname = request.json.get('new_nickname')
+    print('User_ID:{0} | nickname: {1}'.format(user_id, new_nickname))
+    # q = Users.select().where(Users.nickname == new_nickname)
+    updated_row = Users.update(nickname=new_nickname).where(Users.id == user_id).execute()
+    if updated_row > 0:
+        return jsonify({'result': 'OK'})
+    else:
+        return jsonify({'result': 'ERROR',
+                        'reason': 'nickname was not updated, something went wrong'})
 
-@main_bp.route('/test')
+
+@main_bp.route('/test', )
 def test():
     cursor = db.execute_sql('select find_top_total_kills()')
     for row in cursor.fetchall():
         print(row, type(row[0]))
+    return jsonify({})
