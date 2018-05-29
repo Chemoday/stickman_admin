@@ -20,5 +20,13 @@ def create_app(config_name):
     from app.blueprint.auth_http import auth_api
     app.register_blueprint(auth_api)
 
+    from app.blueprint.user_actions import user_actions
+    app.register_blueprint(user_actions)
+
+    from app.blueprint.profile_actions import profile_actions
+    app.register_blueprint(profile_actions)
+
+    from app.blueprint.statistics import statistics
+    app.register_blueprint(statistics)
 
     return app
