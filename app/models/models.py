@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from peewee import *
+from playhouse.shortcuts import model_to_dict
 import datetime
 from .. import db
 from app.utils.auth import token_generator
@@ -116,6 +117,29 @@ class UserProfiles(BaseModel):
     class Meta:
         table_name = 'user_profiles'
 
+
+    @staticmethod
+    def get_profile(profile_id=-1, user_id=None):
+        if user_id:
+            if UserProfiles.select().where(UserProfiles.user == user_id).exists():
+                profiles = {}
+                profiles_query = UserProfiles.select().where(UserProfiles.user == user_id)
+
+                for profile in profiles_query:
+                    profiles[profile.id] = model_to_dict(profile)
+
+                return profiles
+
+            else:
+                return
+
+        if UserProfiles.select().where(UserProfiles.id == profile_id).exists():
+            profile = UserProfiles.get(UserProfiles.id == profile_id)
+            return profile
+        else:
+            return
+
+
 class UserProfileWeapons(BaseModel):
     equipped = BooleanField(constraints=[SQL("DEFAULT false")], null=True)
     extra_ammo_level = IntegerField(constraints=[SQL("DEFAULT 0")])
@@ -139,6 +163,14 @@ class UserProfileWeapons(BaseModel):
 
     class Meta:
         table_name = 'user_profile_weapons'
+
+    @staticmethod
+    def get_profile_weapons(profile_id):
+        weapons = {}
+        profile_weapons = UserProfileWeapons.select().where(UserProfileWeapons.user_profile == profile_id)
+        for id, row in enumerate(profile_weapons):
+            weapons[str(row.weapon)] = model_to_dict(row)
+        return weapons
 
 class UserProfileArmors(BaseModel):
     armor = IntegerField(column_name='armor_id')
@@ -200,6 +232,13 @@ class UserStats(BaseModel):
         table_name = 'user_stats'
         schema = 'public'
 
+    @staticmethod
+    def get_user_stats(user_id):
+        if UserStats.select().where(UserStats.user == user_id).exists():
+            stats = UserStats.get(UserStats.user == user_id)
+            return stats
+        else:
+            return
 
 class BalanceHistory(BaseModel):
     comment = CharField(null=True)
@@ -217,3 +256,27 @@ class BalanceHistory(BaseModel):
     class Meta:
         table_name = 'balance_history'
         schema = 'public'
+
+    @staticmethod
+    def get_account_balance_history(id, search_by='user'):
+        """
+
+        :param id: profile_id or user_id of player
+        :param search_by: accepts only string - user or profile
+        :return: player balance history depends of search type
+        """
+        #TODO make universal function, search by various parameters
+
+        balance_history = {}
+        if search_by == 'user':
+            history = BalanceHistory.select().where(BalanceHistory.user == id)
+        elif search_by =='profile':
+            history = BalanceHistory.select().where(BalanceHistory.user_profile == id)
+        else:
+            return False
+
+
+        for row in history:
+            balance_history[str(row.id)] = model_to_dict(row, max_depth=0)
+
+        return balance_history

@@ -15,13 +15,24 @@ def user_get_all_info():
     user_id = validate_int_json_data(argument_name='user_id')
     if Users.select().where(Users.id == user_id).exists():
         user = Users.get(Users.id == user_id)
-
+    else:
+        return jsonify({
+            'result': 'ERROR',
+            'reason': 'User with this user_id is not exist'
+        })
+    #TODO All info
+    user_stats = UserStats.get_user_stats(user_id=user_id)
+    profiles = UserProfiles.get_profile(user_id=user_id)
+    balance_history = BalanceHistory.get_account_balance_history(id=user_id, search_by='user')
     data = {
-        'user': model_to_dict(user)
+        'user': model_to_dict(user, exclude=[Users.password, Users.settings],),
+        'user_stats': model_to_dict(user_stats),
+        'profiles': profiles,
+        'balance_history': balance_history
     }
 
     return jsonify({
-        'data': data,
+        'user_data': data,
         'result': 'OK'})
 
 
@@ -31,14 +42,13 @@ def user_get_all_info():
 @auth_api_handler.login_required
 def user_get_stats():
     user_id = validate_int_json_data(argument_name='user_id')
-    q = UserStats.select().where(UserStats.user == user_id)
-    if q.exists():
-        stats = UserStats.get(UserStats.user == user_id)
-        return jsonify({'stats': model_to_dict(stats),
-                        'result': 'OK'})
+    stats = UserStats.get_user_stats(user_id=user_id)
+    if stats:
+        return jsonify({'result': 'OK',
+                        'user_stats': model_to_dict(stats)})
     else:
-        return jsonify({'reason': 'User is not exist',
-                        'result': 'ERROR'})
+        return jsonify({'result': 'ERROR',
+                        'reason': 'User is not exist or have no stats registered'})
 
 
 
@@ -72,8 +82,6 @@ def player_entity_search():
 def update_user_nickname():
     user_id = validate_int_json_data(argument_name='user_id')
     new_nickname = validate_string_json_data(argument_name='new_nickname')
-    print('User_ID:{0} | nickname: {1}'.format(user_id, new_nickname))
-    # q = Users.select().where(Users.nickname == new_nickname)
     updated_row = Users.update(nickname=new_nickname).where(Users.id == user_id).execute()
     if updated_row > 0:
         return jsonify({'result': 'OK'})
@@ -81,29 +89,4 @@ def update_user_nickname():
         return jsonify({'result': 'ERROR',
                         'reason': 'nickname was not updated, something went wrong'})
 
-
-
-
-#database hooks
-def _get_account_balance_history(id, search_by='user'):
-    """
-
-    :param id: profile_id or user_id of player
-    :param search_by: accepts only string - user or profile
-    :return: player balance history depends of search type
-    """
-    #TODO make universal function, search by various parameters
-
-    balance_history = {}
-    if search_by == 'user':
-        history = BalanceHistory.select().where(BalanceHistory.user == id)
-    elif search_by =='profile':
-        history = BalanceHistory.select().where(BalanceHistory.user_profile == id)
-    else:
-        return False
-
-    for row in history:
-        balance_history[row.id] = model_to_dict(row, max_depth=0)
-
-    return balance_history
 
