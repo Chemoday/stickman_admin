@@ -280,3 +280,32 @@ class BalanceHistory(BaseModel):
             balance_history[str(row.id)] = model_to_dict(row, max_depth=0)
 
         return balance_history
+
+class Weapons(BaseModel):
+    ammo = IntegerField()
+    attack_type = IntegerField(constraints=[SQL("DEFAULT 0")])
+    bullets = IntegerField()
+    bullets_per_reload = IntegerField()
+    business_data = TextField(constraints=[SQL("DEFAULT '{}'::text")])
+    capacity = IntegerField()
+    category = IntegerField(column_name='category_id')
+    damage = IntegerField()
+    enabled = BooleanField(constraints=[SQL("DEFAULT true")])
+    jackpot = BooleanField(constraints=[SQL("DEFAULT false")])
+    list_index = IntegerField()
+    min_accuracy = IntegerField(constraints=[SQL("DEFAULT 0")])
+    min_explosions = IntegerField(constraints=[SQL("DEFAULT 0")])
+    min_strength = IntegerField(constraints=[SQL("DEFAULT 0")])
+    name = CharField(null=True)
+    recoil = IntegerField()
+    reload_time = IntegerField()
+    sell_allowed = BooleanField(constraints=[SQL("DEFAULT true")], null=True)
+    shot_interval = IntegerField()
+    spread = IntegerField()
+    start_level = IntegerField(constraints=[SQL("DEFAULT 0")])
+    weight = DecimalField(constraints=[SQL("DEFAULT 0.0")])
+
+    class Meta:
+        table_name = 'weapons'
+        schema = 'public'
+
