@@ -309,3 +309,22 @@ class Weapons(BaseModel):
         table_name = 'weapons'
         schema = 'public'
 
+
+class Armors(BaseModel):
+    armor_points = IntegerField()
+    business_data = TextField(constraints=[SQL("DEFAULT '{}'::text")])
+    durability = IntegerField()
+    durability_type = CharField()
+    enabled = BooleanField(constraints=[SQL("DEFAULT true")], null=True)
+    energy_defense = FloatField()
+    explosion_defense = FloatField()
+    heavy_defense = FloatField()
+    medium_defense = FloatField()
+    min_level = IntegerField()
+    name = CharField(null=True)
+    small_defense = FloatField()
+
+    class Meta:
+        table_name = 'armors'
+        schema = 'public'
+

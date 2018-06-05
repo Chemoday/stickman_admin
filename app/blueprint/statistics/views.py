@@ -27,3 +27,26 @@ def get_popular_weapons():
         'result': 'OK',
         'weapons': weapons
     })
+
+
+@statistics.route('/admin/stat/popular-armors')
+@auth_api_handler.login_required
+def get_popular_armors():
+    popular_armors = Armors.\
+        select(UserProfileArmors.armor, Armors.name, fn.COUNT(UserProfileArmors.armor))\
+        .join(UserProfileArmors, on=(Armors.id == UserProfileArmors.armor))\
+        .group_by(Armors.name, UserProfileArmors.armor)\
+        .order_by(fn.COUNT(UserProfileArmors.armor).desc())
+
+    armors = {}
+    print(len(popular_armors))
+    for armor in popular_armors:
+        armors[armor.name] = armor.count
+
+    return jsonify({
+        'result': 'OK',
+        'armors': armors
+    })
+
+
+
