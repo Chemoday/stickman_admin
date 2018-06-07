@@ -7,6 +7,7 @@ from app.models.models import *
 from app.utils.validators import validate_int_json_data
 from app import db
 
+from collections import OrderedDict
 
 @statistics.route('/admin/stat/popular-weapons')
 @auth_api_handler.login_required
@@ -46,6 +47,21 @@ def get_popular_armors():
     return jsonify({
         'result': 'OK',
         'armors': armors
+    })
+
+
+@statistics.route('/admin/stat/richest-users')
+@auth_api_handler.login_required
+def get_richest_users():
+    query = Users.select(Users.nickname, Users.silver).order_by((Users.silver).desc()).limit(5)
+    users = OrderedDict()
+    for user in query:
+        print(user.nickname, user.silver)
+        users[user.nickname] = user.silver
+
+    return jsonify({
+        'result': 'OK',
+        'users': users
     })
 
 
