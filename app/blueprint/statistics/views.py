@@ -7,6 +7,7 @@ from app.models.models import *
 from app.utils.validators import validate_int_json_data
 from app import db
 
+import datetime
 from collections import OrderedDict
 
 @statistics.route('/admin/stat/popular-weapons')
@@ -65,4 +66,35 @@ def get_richest_users():
     })
 
 
+@statistics.route('/admin/stat/week-money-gain', methods=['GET', 'POST'])
+@auth_api_handler.login_required
+def weekly_money_gain():
+    days_to_substract = 7
+    if request.method == 'POST':
+        days_to_substract = validate_int_json_data(argument_name='days')
+
+    current_date = datetime.datetime.now()
+    date_range = current_date - datetime.timedelta(days=days_to_substract)
+
+    query = Users\
+        .select(Users.id, Users.nickname,
+                fn.SUM(BalanceHistory.silver).alias('sum_silver'), fn.SUM(BalanceHistory.gold).alias('sum_gold'))\
+        .join(BalanceHistory, on=(Users.id == BalanceHistory.user))\
+        .where((BalanceHistory.created_dt > date_range))\
+        .group_by(Users.id, Users.nickname)\
+        .order_by(fn.SUM(BalanceHistory.gold).desc())
+    data = {}
+
+
+    for row in query:
+        data[row.nickname] = {}
+        data[row.nickname]['silver'] = row.sum_silver
+        data[row.nickname]['gold'] = row.sum_gold
+
+
+        #Return {'nickname' : {'gold': 0, 'silver': 0}}
+    return jsonify({
+        'result': 'OK',
+        'data': data
+    })
 

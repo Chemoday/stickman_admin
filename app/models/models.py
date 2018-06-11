@@ -6,8 +6,6 @@ import datetime
 from .. import db
 from app.utils.auth import token_generator
 
-# database = PostgresqlDatabase('stickman', **{'user': 'postgres', 'port': 5444})
-
 class UnknownField(object):
     def __init__(self, *_, **__): pass
 
@@ -34,7 +32,6 @@ class Admins(BaseModel):
     @password_hash.setter
     def password_hash(self, password):
         self.password = generate_password_hash(password)
-        print(self.password)
 
     def verify_password(self, password):
         return check_password_hash(self.password, password)
