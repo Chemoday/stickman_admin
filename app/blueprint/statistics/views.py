@@ -51,13 +51,16 @@ def get_popular_armors():
     })
 
 
-@statistics.route('/admin/stat/richest-users')
+@statistics.route('/admin/stat/richest-users', methods=['GET', 'POST'])
 @auth_api_handler.login_required
 def get_richest_users():
-    query = Users.select(Users.nickname, Users.silver).order_by((Users.silver).desc()).limit(5)
+    amount = 15
+    if request.method == 'POST':
+        amount = validate_int_json_data(argument_name='amount')
+
+    query = Users.select(Users.nickname, Users.silver).order_by((Users.silver).desc()).limit(amount)
     users = OrderedDict()
     for user in query:
-        print(user.nickname, user.silver)
         users[user.nickname] = user.silver
 
     return jsonify({
@@ -97,4 +100,6 @@ def weekly_money_gain():
         'result': 'OK',
         'data': data
     })
+
+
 

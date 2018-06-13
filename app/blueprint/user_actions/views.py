@@ -90,3 +90,20 @@ def update_user_nickname():
                         'reason': 'nickname was not updated, something went wrong'})
 
 
+
+@auth_api_handler.login_required
+@user_actions.route('/admin/user/payments', methods=['POST'])
+def get_user_payments():
+    platform = 'android'
+
+    user_id = validate_int_json_data(argument_name='user_id')
+    if request.method == 'POST':
+
+        platform = validate_string_json_data(argument_name='platform')
+
+    #TODO add handlers
+    data = BalanceHistory.get_payments_history(user_id=user_id, platform=platform)
+    return jsonify({
+        'result': 'OK',
+        'data': data
+    })

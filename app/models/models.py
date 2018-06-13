@@ -278,6 +278,18 @@ class BalanceHistory(BaseModel):
 
         return balance_history
 
+    @staticmethod
+    def get_payments_history(user_id, platform='android'):
+        """
+        get android or ios payments
+        :param user_id:
+        :param platform:
+        :return:
+        """
+        #TODO add handler
+        data = {}
+        return data
+
 class Weapons(BaseModel):
     ammo = IntegerField()
     attack_type = IntegerField(constraints=[SQL("DEFAULT 0")])
