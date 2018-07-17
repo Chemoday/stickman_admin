@@ -101,7 +101,7 @@ def get_user_payments():
 
         platform = validate_string_json_data(argument_name='platform')
 
-    #TODO add handlers
+    #TODO add handlers in model
     data = BalanceHistory.get_payments_history(user_id=user_id, platform=platform)
     return jsonify({
         'result': 'OK',

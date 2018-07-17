@@ -12,6 +12,8 @@ class UnknownField(object):
 class BaseModel(Model):
     class Meta:
         database = db
+        schema = 'public'
+
 
 class Admins(BaseModel):
     last_login_dt = DateTimeField(null=True)
@@ -52,6 +54,7 @@ class Admins(BaseModel):
 
     class Meta:
         table_name = 'admins'
+
 
 class AdminHistory(BaseModel):
     action = IntegerField(null=True)
@@ -128,6 +131,7 @@ class UserProfiles(BaseModel):
                 return profiles
 
             else:
+                #profile with this user_id is not exist
                 return
 
         if UserProfiles.select().where(UserProfiles.id == profile_id).exists():
