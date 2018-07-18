@@ -107,3 +107,21 @@ def get_user_payments():
         'result': 'OK',
         'data': data
     })
+
+
+@auth_api_handler.login_required
+@user_actions.route('/admin/user/kick', methods=['POST'])
+def user_kick():
+    user_id = validate_int_json_data(argument_name='user_id')
+    pass
+    #TODO need to dedicate token
+
+
+
+
+
+
+
+
+
+

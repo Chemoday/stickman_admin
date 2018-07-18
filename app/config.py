@@ -9,6 +9,9 @@ class Config:
     POSTS_PER_PAGE = 10
     TOKEN_LIFETIME = 60
 
+    #manage_stuff
+    REGISTRATION_OPEN = True
+
     @staticmethod
     def init_app(app):
         pass
@@ -17,12 +20,13 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
 
+    #db
     host= 'localhost'
-    port= 5444
+    port = 5444
     user= 'postgres'
     password = 'postgres'
     DATABASE = peewee.PostgresqlDatabase('stickman', user=user, password=password,
-                                         host=host, port=port)
+                                         host=host, port=port,  autorollback=True)
 
 
 class TestingConfig(Config):

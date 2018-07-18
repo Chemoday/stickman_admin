@@ -1,4 +1,4 @@
-from flask import request, abort, jsonify, url_for, g
+from flask import request, abort, jsonify, url_for, g, current_app
 from . import auth_api, auth_api_handler
 from config import admin_actions
 from flask import  Response
@@ -13,8 +13,7 @@ from app.models.models import Admins, Users, AdminHistory
 
 @auth_api.route('/admin/register', methods = ['POST'])
 def register_admin():
-    registration_open = True
-    if not registration_open:
+    if not current_app.config['REGISTRATION_OPEN']:
         abort(401)
     else:
         try:
